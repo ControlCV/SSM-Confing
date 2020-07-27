@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+    <!-- 使用注解的包，包括子集 -->
+    <context:component-scan base-package="com.example.controller"></context:component-scan>
+
+    <!--对静态资源的访问-->
+    <mvc:resources mapping="/static/**" location="/static/css,/static/js" /><!--/ 开头是指应用程序的根目录-->
+    <mvc:resources mapping="/uploadFiles/**" location="/,/upload" />
+
+    <!-- 对静态资源文件的访问， 将无法mapping到Controller的path交给default servlet handler处理 -->
+    <mvc:default-servlet-handler/>
+
+    <!-- 访问拦截  -->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**/**"/>        <!--拦截的路径-->
+            <bean class="com.example.interceptor.LoginHandlerInterceptor"/><!--发送到的拦截器-->
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <!-- 配置SpringMVC的视图解析器 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!--这里需要引入org/apache/commons/fileupload/FileItemFactory-的jar包-->
+    <bean id="filterMultipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 默认编码 -->
+        <property name="defaultEncoding" value="utf-8" />
+        <!--上传文件的最大值-->
+        <property name="maxUploadSize" value="100000000"/>
+        <!-- 内存中的最大值 -->
+        <property name="maxInMemorySize" value="10240000"></property>
+    </bean>
+
+    <!-- 增加定时任务插件(用注解) -->
+<!--    <context:annotation-config></context:annotation-config>-->
+<!--    &lt;!&ndash; spring 扫描注解配置 &ndash;&gt;-->
+<!--    <context:component-scan base-package="com.example.task"></context:component-scan>-->
+<!--    &lt;!&ndash; 开启这个配置 spring才能识别@Scheduled注解 &ndash;&gt;-->
+<!--    <task:annotation-driven scheduler="qbScheduler" mode="proxy"/>-->
+<!--    <task:scheduler id="qbScheduler" pool-size="10"/>-->
+
+    <!-- 返回json 需要导入 jackson-annotations.jar,jackson-core.jar,jackson-databind.jar-->
+<!--    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />-->
+<!--    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">-->
+<!--        <property name="messageConverters">-->
+<!--            <list>-->
+<!--                <bean class="org.springframework.http.converter.StringHttpMessageConverter">-->
+<!--                    <property name="supportedMediaTypes">-->
+<!--                        <list>-->
+<!--                            <value>text/html; charset=UTF-8</value>-->
+<!--                            <value>application/json;charset=UTF-8</value>-->
+<!--                        </list>-->
+<!--                    </property>-->
+<!--                </bean>-->
+<!--                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">-->
+<!--                    <property name="supportedMediaTypes">-->
+<!--                        <list>-->
+<!--                            <value>text/html; charset=UTF-8</value>-->
+<!--                            <value>application/json;charset=UTF-8</value>-->
+<!--                        </list>-->
+<!--                    </property>-->
+<!--                </bean>-->
+<!--            </list>-->
+<!--        </property>-->
+<!--    </bean>-->
+
+</beans>
